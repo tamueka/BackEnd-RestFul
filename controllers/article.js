@@ -57,7 +57,7 @@ const controller = {
         //Devolvemos respuesta
         return res.status(200).send({
           status: "success",
-          article: articleStored
+          article: articleStored,
         });
       });
     } else {
@@ -66,6 +66,32 @@ const controller = {
         message: "Campos vacios",
       });
     }
+  },
+
+  getArticles: (req, res) => {
+    //Find en la base de datos; sort ordena por id con el - ordena descendente (+ nuevo al mas viejo)
+    Article.find({}).sort('-_id').exec((err, articles) => {
+
+      if (err) {
+        return res.status(500).send({
+          status: "error",
+          message: "Error al devolver los articulos",
+        });
+      }
+
+      if (!articles) {
+        return res.status(404).send({
+          status: "error",
+          message: "Error no existen articulos",
+        });
+      }
+
+      return res.status(200).send({
+        status: "success",
+        articles,
+      });
+
+    });
   },
 }; //end controller
 
