@@ -18,11 +18,13 @@ app.use(bodyParser.json());
 // Añadir prefijos a las rutas
 
 // Ruta o metodo de prueba
-app.get('/datos-curso', function(req, res) {
+app.post('/datos-curso', function(req, res) {
+    let hola = req.body.hola;
     return res.status(200).send({
         curso: 'Master en Frameworks JS',
         autor: 'Samuel Ruiz',
-        url: 'tamueka.com'
+        url: 'tamueka.com',
+        hola,
     });
 });
 
