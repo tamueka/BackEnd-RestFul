@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 var app = express();
 
 // Cargar ficheros rutas
+const article_routes = require('./routes/article')
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -15,18 +16,9 @@ app.use(bodyParser.json());
 
 // CORS
 
-// Añadir prefijos a las rutas
+// Añadir prefijos a las rutas / Cargar rutas
+app.use('/api', article_routes);
 
-// Ruta o metodo de prueba
-app.post('/datos-curso', function(req, res) {
-    let hola = req.body.hola;
-    return res.status(200).send({
-        curso: 'Master en Frameworks JS',
-        autor: 'Samuel Ruiz',
-        url: 'tamueka.com',
-        hola,
-    });
-});
 
 // Exportar el modulo (fichero actual)
 module.exports = app;
