@@ -5,7 +5,7 @@ const Article = require("../models/article");
 
 const controller = {
   datosCurso: (req, res) => {
-    let hola = req.body.hola;
+    var hola = req.body.hola;
 
     return res.status(200).send({
       curso: "Master en Frameworks JS",
@@ -70,16 +70,15 @@ const controller = {
 
   getArticles: (req, res) => {
     //Last articles
-    let query = Article.find({});
-    let last = req.params.last;
-    
-    if(last || last != undefined){
-      query.limit(5)
-    }
-    
-    //Find en la base de datos; sort ordena por id con el - ordena descendente (+ nuevo al mas viejo)
-    query.sort('-_id').exec((err, articles) => {
+    var query = Article.find({});
+    var last = req.params.last;
 
+    if (last || last != undefined) {
+      query.limit(5);
+    }
+
+    //Find en la base de datos; sort ordena por id con el - ordena descendente (+ nuevo al mas viejo)
+    query.sort("-_id").exec((err, articles) => {
       if (err) {
         return res.status(500).send({
           status: "error",
@@ -98,7 +97,35 @@ const controller = {
         status: "success",
         articles,
       });
+    });
+  },
+  getArticle: (req, res) => {
+    //Recoger id de la url
+    var articleId = req.params.id;
+    //console.log(articleId);
 
+    //Comprobar que existe
+    if (!articleId || articleId == null) {
+      return res.status(404).send({
+        status: "error",
+        message: "Error no existe el articulo",
+      });
+    }
+
+    //Buscar un articulo y comprobamos
+    Article.findById(articleId, (err, article) => {
+      if (err || !article) {
+        return res.status(500).send({
+          status: "error",
+          message: "Error no existe el articulo",
+        });
+      }
+
+      //Devolverlo en JSON
+      return res.status(200).send({
+        status: "success",
+        article,
+      });
     });
   },
 }; //end controller
