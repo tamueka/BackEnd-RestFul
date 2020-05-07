@@ -268,6 +268,25 @@ const controller = {
       );
     }
   }, //end upload files
+
+  getImage: (req, res) => {
+    //Obtenemos el fichero
+    var file = req.params.image;
+    //Obtenemos la ruta del fichero
+    var path_file = `./upload/articles/${file}`;
+
+    fs.exists(path_file, (exists) => {
+      //console.log(exists);
+      if (exists) {
+        return res.sendFile(path.resolve(path_file));
+      } else {
+        return res.status(404).send({
+          status: "error",
+          message: "La imagen no existe !!!"
+        });
+      }
+    });
+  },
 }; //end controller
 
 module.exports = controller;
