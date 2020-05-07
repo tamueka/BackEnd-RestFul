@@ -1,6 +1,9 @@
 "use strict";
 
 const validator = require("validator");
+const fs = require("fs");
+const path = require("path");
+
 const Article = require("../models/article");
 
 const controller = {
@@ -198,6 +201,73 @@ const controller = {
       });
     });
   },
+
+  //Subida de archivos
+  upload: (req, res) => {
+    //Configurar module connect multiparty router/article.js
+
+    //Recoger el fichero de la peticion
+    var file_name = "Imagen no subida...";
+    //console.log(req.files)
+
+    if (!req.files) {
+      console.log(req.files);
+      return res.status(404).send({
+        status: "error",
+        message: file_name,
+      });
+    }
+
+    //Obtener nombre y extension del archivo
+    var file_path = req.files.file0.path;
+    var file_split = file_path.split("\\");
+    //ADVERTENCIA * EN LINUX O MAC
+    //var file_split = file_path.split('/');
+    //Nombre del archivo
+    var file_name = file_split[2];
+
+    //Extension del fichero
+    var extension_split = file_name.split(".");
+    var file_ext = extension_split[1];
+
+    //Comprobar la extension, solo imagenes, si es valida borrar el fichero
+    if (
+      file_ext != "png" &&
+      file_ext != "jpeg" &&
+      file_ext != "jpg" &&
+      file_ext != "gi f"
+    ) {
+      //borrar el archivo subido
+      fs.unlink(file_path, (err) => {
+        return res.status(404).send({
+          status: "error",
+          message: "La extension de la imagen no es válida !!!",
+        });
+      });
+    } else {
+      //si todo es valido, sacando id de la url
+      var articleId = req.params.id;
+
+      //Buscar el articulo, aignarle el nombre de la imagen y actualizarlo
+      Article.findOneAndUpdate(
+        { _id: articleId },
+        { image: file_name },
+        { new: true },
+        (err, articleUpdated) => {
+          if (err || !articleUpdated) {
+            return res.status(404).send({
+              status: "error",
+              message: "Error al guardar el articulo",
+            });
+          }
+          return res.status(200).send({
+            status: "success",
+            article: articleUpdated,
+          });
+        }
+      );
+    }
+  }, //end upload files
 }; //end controller
 
 module.exports = controller;
